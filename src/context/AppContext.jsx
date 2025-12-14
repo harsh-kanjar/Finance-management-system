@@ -7,20 +7,23 @@ export const AppProvider = ({ children }) => {
   const [balanceData, setBalanceData] = useState([]);
   const [savingsData, setSavingsData] = useState([]);
   const [spendData, setSpendData] = useState([]);
+  const [sipData, setSipData] = useState([]); // <-- New state for SIPs
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadTSVFiles = async () => {
       try {
-        const [b, s, sp] = await Promise.all([
+        const [b, s, sp, sip] = await Promise.all([
           d3.tsv("/kotak.tsv"),
           d3.tsv("/savings.tsv"),
           d3.tsv("/spend.tsv"),
+          d3.tsv("/sips.tsv"), // <-- Load SIP file
         ]);
 
         setBalanceData(b);
         setSavingsData(s);
         setSpendData(sp);
+        setSipData(sip); // <-- Set SIP data
       } catch (err) {
         console.error("Error loading TSV files:", err);
       } finally {
@@ -37,6 +40,7 @@ export const AppProvider = ({ children }) => {
         balanceData,
         savingsData,
         spendData,
+        sipData,
         loading,
       }}
     >

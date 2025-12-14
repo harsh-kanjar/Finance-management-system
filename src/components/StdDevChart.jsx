@@ -116,7 +116,7 @@ function StdDevChart({ balanceData }) {
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
 
-          <XAxis dataKey="Date" type="category" name="Date" />
+          <XAxis dataKey="Date" type="category" name="Date" tickFormatter={(v) => v.slice(0, 2)} hide/>
           <YAxis dataKey="Amount" type="number" name="Amount" />
 
           <Tooltip

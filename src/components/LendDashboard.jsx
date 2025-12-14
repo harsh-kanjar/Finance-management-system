@@ -105,7 +105,7 @@ function LendDashboard({ data }) {
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="Date" />
+            <XAxis dataKey="Date" hide/>
             <YAxis />
             <Tooltip
               formatter={(value) =>

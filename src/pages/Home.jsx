@@ -4,22 +4,25 @@ import {
   BalanceDashboard,
   SavingsDashboard,
   LendDashboard,
-  SpendDashboard
+  SpendDashboard,
+  SipDashboard,
+  TransactionsType
 } from "../components";
 import StdDevChart from "../components/StdDevChart";
 
 function Home() {
-  const { balanceData, savingsData, spendData, loading } = useAppContext();
+  const { balanceData, savingsData, spendData, sipData, loading } = useAppContext();
 
-  if (loading) return <div className="p-6">Loading…</div>;
+  // if (loading) return <div className="p-6">Loading…</div>;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Analytics Dashboard</h1>
+      {/* <h1 className="text-3xl font-bold mb-6 text-gray-800">Analytics Dashboard</h1> */}
 
       <SpendDashboard data={spendData} />
       <br />
-
+      <TransactionsType />
+      <br />
       <StdDevChart balanceData={balanceData} />
       <br />
 
@@ -29,8 +32,12 @@ function Home() {
       {/* <BalanceDashboard data={balanceData} /> */}
       <br />
 
+
       <LendDashboard data={balanceData} />
       <br />
+
+      <SipDashboard />
+
     </div>
   );
 }

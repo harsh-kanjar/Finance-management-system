@@ -45,12 +45,25 @@ function BalanceDashboard({ data }) {
     <div className="flex gap-4">
       {/* Left: Chart */}
       <div className="bg-white p-4 rounded-xl shadow flex-1">
-        {/* <h2 className="text-xl font-semibold mb-2">Cumulative Balance Over Time</h2> */}
-        <h2 className="text-xl font-semibold mb-2">Main A/C Activity</h2>
+        <div className="flex justify-between">
+          {/* <h2 className="text-xl font-semibold mb-2">Cumulative Balance Over Time</h2> */}
+          <h2 className="text-xl font-semibold mb-2">Main A/C Activity</h2>
+          {/* Button to open table modal */}
+          <div className="mb-2 text-right">
+            <button
+              onClick={() => setIsTableModalOpen(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            >
+              View Table
+            </button>
+          </div>
+        </div>
+
         <ResponsiveContainer width="100%" height={400}>
           <LineChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="Date" />
+            {/* <XAxis dataKey="Date" tickFormatter={(v) => v.slice(8, 10)} /> */}
+            <XAxis dataKey="Date" hide />
             <YAxis />
             <Tooltip
               formatter={(value) =>
@@ -61,15 +74,7 @@ function BalanceDashboard({ data }) {
           </LineChart>
         </ResponsiveContainer>
 
-        {/* Button to open table modal */}
-        <div className="mt-4 text-right">
-          <button
-            onClick={() => setIsTableModalOpen(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-          >
-            View Table
-          </button>
-        </div>
+
       </div>
       {/* Modal for table */}
       {isTableModalOpen && (

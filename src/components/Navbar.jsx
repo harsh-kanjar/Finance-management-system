@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FiChevronDown, FiChevronRight } from "react-icons/fi";
 
 function Navbar() {
@@ -35,8 +35,38 @@ function Navbar() {
 
   return (
     <nav className="bg-white shadow-md py-4 px-6 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="text-2xl font-bold text-gray-800">Finance Tracker</div>
+      <div className="flex justify-around items-center">
+        <div className="text-2xl font-bold text-gray-800">Where is my money ?</div>
+
+        <div className="mx-4 flex gap-3">
+          <Link
+            to="sips"
+            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold
+               hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600
+               transition-all duration-200 shadow-sm"
+          >
+            SIP
+          </Link>
+
+          <Link
+            to="/mainAC"
+            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold
+               hover:bg-green-50 hover:border-green-400 hover:text-green-600
+               transition-all duration-200 shadow-sm"
+          >
+            Main A/C
+          </Link>
+
+          <Link
+            to="/allTransactions"
+            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold
+               hover:bg-purple-50 hover:border-purple-400 hover:text-purple-600
+               transition-all duration-200 shadow-sm"
+          >
+            All Transactions
+          </Link>
+        </div>
+
 
         <div className="flex space-x-6 relative" ref={menuRef}>
           {/* Manager Dropdown */}

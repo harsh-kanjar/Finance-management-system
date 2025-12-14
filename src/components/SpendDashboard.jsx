@@ -68,7 +68,7 @@ const SpendDashboard = () => {
                 recommendedAvgDailySpend: 0,
                 daysUntilOut: 0,
                 avgTransactionsADay: 0,
-                recommendedAvgTransaction:0
+                recommendedAvgTransaction: 0
             };
 
         const parsed = rows.map((r) => {
@@ -98,18 +98,35 @@ const SpendDashboard = () => {
         const pocketMoney = parsed[parsed.length - 1]?.Balance || 0;
         const totalSpendFromPocketMoney = parsed
             .filter((r) => r.Category !== "Fund allotted")
-            .reduce((sum, r) => sum + (r.AmountNum || 0), 0);
+            .reduce((sum, r) => {
+                if (r.Type === "Income") {
+                    return sum - (r.AmountNum || 0); // subtract income
+                }
+                return sum + (r.AmountNum || 0);   // add expense
+            }, 0);
 
         // Average daily spend
         const firstDate = parsed[0]?.DateObj;
         const today = new Date();
-        const daysDifference = Math.max(1, Math.floor((today - firstDate) / (1000 * 3600 * 24)) + 1);
+        const daysDifference = Math.max(
+            1,
+            Math.floor((today - firstDate) / (1000 * 3600 * 24)) + 1
+        );
 
-        const filteredSpend = parsed.filter((r) => r.Type !== "Income" && r.Category !== "Fund allotted");
-        const totalSpend = filteredSpend.reduce((sum, r) => sum + (r.AmountNum || 0), 0);
+        // exclude Fund allotted, but keep Income for subtraction
+        const filteredSpend = parsed.filter(
+            (r) => r.Category !== "Fund allotted"
+        );
+
+        const totalSpend = filteredSpend.reduce((sum, r) => {
+            const amt = r.AmountNum || 0;
+            return r.Type === "Income" ? sum - amt : sum + amt;
+        }, 0);
+
+        const expenseCount = filteredSpend.filter(r => r.Type !== "Income").length;
 
         const avgDailySpend = totalSpend / daysDifference;
-        const avgTransaction = filteredSpend.length ? totalSpend / filteredSpend.length : 0;
+        const avgTransaction = expenseCount ? totalSpend / expenseCount : 0;
 
         // Trend detection
         let chartTrend = "flat";
@@ -161,75 +178,172 @@ const SpendDashboard = () => {
         <div className="flex flex-col gap-8">
             {/* Pocket Money Card */}
             <PocketMoneyCard pocketMoney={pocketMoney} totalSpendFromPocketMoney={totalSpendFromPocketMoney} />
- 
+
             {/* Average Daily & Transaction Spend */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                {/* Average Daily Spend Card */}
                 <div
-                    className={`p-4 rounded-xl font-semibold border ${avgDailySpend > 100
-                        ? "bg-purple-100 text-purple-800 border-purple-300"
-                        : avgDailySpend < 50
+                    className={`mb-1 p-4 rounded-xl font-semibold border ${avgDailySpend === 0
+                        ? "bg-yellow-50 text-yellow-800 border-yellow-400"
+                        : avgDailySpend <= recommendedAvgDailySpend
                             ? "bg-green-50 text-green-700 border-green-300"
-                            : "bg-yellow-50 text-yellow-700 border-yellow-300"
+                            : "bg-red-100 text-red-800 border-red-300"
                         }`}
                 >
-                    Average Daily Spend: ₹{avgDailySpend.toLocaleString("en-IN", { maximumFractionDigits: 2 })} -  <span>(Recommended <span className="px-2 py-1 rounded-md text-white bg-green-700"> ₹{recommendedAvgDailySpend.toFixed(2)}</span> )</span>
+                    Average Daily Spend:
+                    ₹{avgDailySpend.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
 
-                    <div className="my-1">
-                        <span>With an average daily spend of ₹{avgDailySpend.toLocaleString("en-IN", { maximumFractionDigits: 2 })} your money will run out in {daysUntilOut.toFixed(0)} Days</span>
-                        <span> (on {new Date(new Date().setDate(new Date().getDate() + daysUntilOut)).toLocaleDateString()})</span>
-                    </div>
+                    {/* Recommended */}
+                    {avgDailySpend > 0 && avgDailySpend > recommendedAvgDailySpend && (
+                        <span>
+                            {" "} - ( Recommended{" "}
+                            <span className="px-2 py-1 rounded-md text-white bg-green-700">
+                                ₹{recommendedAvgDailySpend.toFixed(2)}
+                            </span>
+                            )
+                        </span>
+                    )}
 
-                    <div className="text-sm mt-1 opacity-80">
-                        {avgDailySpend > 100 && "Extremely high — Reduce spending immediately!"}
-                        {avgDailySpend < 50 && "Great! Low daily spend."}
-                        {avgDailySpend >= 50 && avgDailySpend <= 100 && "High spending — Monitor it."}
+                    {/* Status message */}
+                    {avgDailySpend === 0 ? (
+                        <p className="mt-2 text-yellow-700">
+                            No spending recorded yet — Excellent control
+                        </p>
+                    ) : avgDailySpend > recommendedAvgDailySpend ? (
+                        <p className="mt-2 text-red-600">
+                            Burn - ₹{(avgDailySpend - recommendedAvgDailySpend).toFixed(2)} on Average
+                        </p>
+                    ) : (
+                        <p className="mt-2 text-green-700">
+                            Saved + ₹{(recommendedAvgDailySpend - avgDailySpend).toFixed(2)} on Average
+                        </p>
+                    )}
+
+                    {/* Money run-out warning (only when spend > 0 & within month) */}
+                    {(() => {
+                        if (avgDailySpend <= 0) return null;
+
+                        const today = new Date();
+                        const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                        const moneyRunsOutDate = new Date(
+                            new Date().setDate(new Date().getDate() + daysUntilOut)
+                        );
+
+                        if (moneyRunsOutDate <= lastDayOfMonth) {
+                            return (
+                                <div className="my-1">
+                                    <span>
+                                        With an average daily spend of ₹
+                                        {avgDailySpend.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+                                        , your money will run out in {daysUntilOut.toFixed(0)} days
+                                    </span>
+                                    <span>
+                                        {" "} (on{" "}
+                                        {new Date(
+                                            new Date().setDate(new Date().getDate() + daysUntilOut)
+                                        ).toLocaleDateString()}
+                                        )
+                                    </span>
+                                </div>
+                            );
+                        }
+
+                        return null;
+                    })()}
+
+                    {/* Footer note */}
+                    <div className="text-sm mt-2 opacity-80">
+                        {avgDailySpend === 0 && "Perfect start — zero spend so far."}
+                        {avgDailySpend > 0 && avgDailySpend <= recommendedAvgDailySpend &&
+                            "Good — You’re spending within safe limits."}
+                        {avgDailySpend > recommendedAvgDailySpend &&
+                            "High — Spending more than recommended!"}
                     </div>
                 </div>
 
+
+
+                {/* Average Transaction Amount Card */}
                 <div
-                    className={`p-4 rounded-xl font-semibold border ${avgTransaction > 100
-                        ? "bg-purple-100 text-purple-800 border-purple-300"
-                        : avgTransaction < 50
-                            ? "bg-green-50 text-green-700 border-green-300"
-                            : "bg-yellow-50 text-yellow-700 border-yellow-300"
+                    className={`p-4 rounded-xl font-semibold border ${avgTransaction === 0
+                            ? "bg-yellow-50 text-yellow-800 border-yellow-400"
+                            : avgTransaction <= recommendedAvgTransaction
+                                ? "bg-green-50 text-green-700 border-green-300"
+                                : "bg-red-100 text-red-800 border-red-300"
                         }`}
                 >
-                    Average Transaction Amount: ₹{avgTransaction.toLocaleString("en-IN", { maximumFractionDigits: 2 })} -  <span>(Recommended <span className="px-2 py-1 rounded-md text-white bg-green-700"> ₹{recommendedAvgTransaction.toFixed(2)}</span> )</span>
-                    <div className="my-1">
-                        <p>Avg Transaction per day - {avgTransactionsADay.toFixed(2)}</p>
-                    </div>
-                    <div className="text-sm mt-1 opacity-80">
-                        {avgTransaction > 100 && "Very high spend per transaction!"}
-                        {avgTransaction < 50 && "Excellent — Low spend per txn."}
-                        {avgTransaction >= 50 && avgTransaction <= 100 && "High — Monitor each transaction."}
+                    Average Transaction Amount:
+                    ₹{avgTransaction.toLocaleString("en-IN", { maximumFractionDigits: 2 })}
+
+                    {/* Recommended */}
+                    {avgTransaction > 0 && avgTransaction > recommendedAvgTransaction && (
+                        <span>
+                            {" "} - ( Recommended{" "}
+                            <span className="px-2 py-1 rounded-md text-white bg-green-700">
+                                ₹{recommendedAvgTransaction.toFixed(2)}
+                            </span>
+                            )
+                        </span>
+                    )}
+
+                    {/* Status message */}
+                    {avgTransaction === 0 ? (
+                        <p className="mt-2 text-yellow-700">
+                            No transactions recorded yet — Looks good
+                        </p>
+                    ) : (
+                        <div className="my-1">
+                            <p>Avg Transactions per day: {avgTransactionsADay.toFixed(2)}</p>
+                        </div>
+                    )}
+
+                    {/* Footer note */}
+                    <div className="text-sm mt-2 opacity-80">
+                        {avgTransaction === 0 && "Excellent — No transactions so far."}
+                        {avgTransaction > 0 && avgTransaction <= recommendedAvgTransaction &&
+                            "Good — Low spend per transaction."}
+                        {avgTransaction > recommendedAvgTransaction &&
+                            "High — Spending too much per txn!"}
                     </div>
                 </div>
+
+
             </div>
 
             {/* Chart + Right Placeholder */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left: Chart */}
                 <div
-                    className={`p-4 rounded-xl shadow border flex flex-col ${chartTrend === "up"
-                        ? "bg-green-50 border-green-300 text-green-700"
-                        : chartTrend === "down"
-                            ? "bg-red-50 border-red-300 text-red-700"
-                            : "bg-yellow-50 border-yellow-300 text-yellow-700"
-                        }`}
+                    className={`p-4 rounded-xl shadow flex flex-col bg-white`}
                 >
-                    <h2 className="text-xl font-semibold mb-2">
-                        Balance After Transaction
-                        <span className="block text-sm opacity-70 mt-1">
+                    <div className="flex justify-between">
+                        <h2 className="text-xl font-semibold mb-2">
+                            Pocket Money Activity
+                            {/* <span className="block text-sm opacity-70 mt-1">
                             {chartTrend === "up" && "Positive Trend — Balance Increasing"}
                             {chartTrend === "down" && "Negative Trend — Balance Decreasing"}
                             {chartTrend === "flat" && "Stable Trend — No Major Change"}
-                        </span>
-                    </h2>
+                        </span> */}
+                        </h2>
+
+                        <div className="mb-2 text-right">
+                            <button
+                                onClick={() => setIsTableModalOpen(true)}
+                                className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                                title="View Table"
+                            >
+                                View Table
+                            </button>
+                        </div>
+
+                    </div>
 
                     <ResponsiveContainer width="100%" height={400}>
                         <LineChart data={chartData}>
                             <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="Date" tickFormatter={(v) => v.slice(0, 5)} />
+                            {/* <XAxis dataKey="Date" tickFormatter={(v) => v.slice(0, 2)} /> */}
+                            <XAxis dataKey="Date" hide />
                             <YAxis />
                             <Tooltip
                                 formatter={(v) =>
@@ -241,15 +355,7 @@ const SpendDashboard = () => {
                         </LineChart>
                     </ResponsiveContainer>
 
-                    <div className="mt-4 text-right">
-                        <button
-                            onClick={() => setIsTableModalOpen(true)}
-                            className="p-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                            title="View Table"
-                        >
-                            📊
-                        </button>
-                    </div>
+
                 </div>
 
                 {/* Right placeholder */}

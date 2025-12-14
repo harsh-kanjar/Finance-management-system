@@ -2,7 +2,7 @@ Date	Category	Description	Payment method	Amount (INR)	Type	Balance after spend (
 01-12-2025	Income	Salary credit	Bank Transfer	30,000	Income	30,023.34	Nov Salary	20250112-INC-KTK-0001	
 01-12-2025	Transfer	Bank Kotak - Bank SBI Self Transfer	UPI (Google Pay)	10,000	Expense	20,023.34	GPay Self Transfer	20250112-TRA-KTK-0002	
 01-12-2025	Loan Given	Amount given to Father	UPI (Google Pay)	4,000.00	Lend	16,023.34	Will return in few days (Bajaj EMI)	20250112-LOA-KTK-0003	x-001
-02-12-2025	Personal	Snacks / Personal Spend	UPI (Google Pay)	40	Expense	15,983.34	-	20250212-PER-KTK-0004	
+02-12-2025	Personal	Snacks / Personal Spend	UPI (Google Pay)	40	Expense	15,983.34	Snacks / Personal Spend	20250212-PER-KTK-0004	
 02-12-2025	Loan Given	Amount given to Mummy 	ATM/CASH	500	Lend	15,483.34	Will return in few days (Home Expense)	20250212-LOA-KTK-0005	x-002
 02-12-2025	Transfer 	Bank Kotak - Bank SBI Self Transfer	Bank Transfer 	7,500	Expense 	7,983.34	GPay Self Transfer 	20250212-TRA-KTK-0006	
 02-12-2025	Loan Given 	Amount given to Father 	UPI (Google Pay)	1,070.00	Lend	6,913.34	Will return in few days (Personal)	20250212-LOA-KTK-0007	x-003
@@ -12,9 +12,17 @@ Date	Category	Description	Payment method	Amount (INR)	Type	Balance after spend (
 05-12-2025	Personal	Medicines	UPI (Google Pay)	184	Health care 	6,549.34	Spend on Medicine (Mom)	20250512-PER-KTK-0011	
 05-12-2025	Personal	Snacks / Personal Spend 	UPI (Google Pay)	10	Expense	6,539.34	Spend on chocalates (Avni)	20250512-PER-KTK-0012	
 05-12-2025	Home	Snacks / Milk etc 	UPI (Google Pay)	100	Expense 	6,439.34	Spend on milk, biscuits , snacks etc	20250512-HOM-KTK-0013	
-06-12-2025	Personal	Nothing	ATM/CASH	0	Nothing	6,439.34	No transaction happne	20250612-PER-KTK-0014	
+06-12-2025	Personal	Nothing	No Transaction	0	Nothing	6,439.34	No transaction happne	20250612-PER-KTK-0014	
 07-12-2025	Personal 	Travel (Fuel)	UPI (Google Pay)	100	Expense 	6,339.34	Sent money to Armaan for fuel	20250712-PER-KTK-0015	
 07-12-2025	Home	Snacks / Milk etc	UPI (Google Pay)	64	Expense 	6,275.34	Spend on milk, biscuits , snacks etc	20250712-HOM-KTK-0016	
 07-12-2025	Loan Given 	Recharge amount 	UPI (Google Pay)	242	Lend	6,033.34	Father Recharge 	20250712-LOA-KTK-0017	x-004
 07-12-2025	Lend Return 	Amount given to Father	UPI (Google Pay)	2,000	Lend	8,033.34	Return 50% money	20250712-LEN-KTK-0018	y-001
-07-12-2025	Home Essentials 	Home essentials 	UPI (Google Pay)	5,000	Home essentials  	3,033.34	Home essentials 	20250712-HOM-KTK-0019	
+07-12-2025	Home Essentials 	Home essentials 	UPI (Google Pay)	5,000	Home essentials 	3,033.34	Home essentials 	20250712-HOM-KTK-0019	
+08-12-2025	Recharge	Self mobile racharge	UPI (Google Pay)	366.9	Expense	2,666.44	Recharge	20250812-REC-KTK-0020	
+09-12-2025	Home	Snacks / Personal Spend 	UPI (Google Pay)	10	Expense	2,656.44	Spend on biscuits	20250912-HOM-KTK-0021	
+09-12-2025	Home	Snacks / Milk etc	UPI (Google Pay)	40	Expense 	2,616.44	Spend on milk, biscuits , snacks etc	20250912-HOM-KTK-0022	
+10-12-2025	Lend Return 	Recharge amount 	Bank Transfer 	270	Lend	2,886.44	Return 100% money + 28 got extra	20251012-LEN-KTK-0023	y-004
+10-12-2025	Home	Snacks / Personal Spend 	UPI (Google Pay)	10	Expense	2,876.44	Spend on biscuits	20251012-HOM-KTK-0024
+11-12-2025	Personal	Nothing	No Transaction	0	Nothing	2,876.44	No transaction happne	20251112-PER-KTK-0025
+12-12-2025	Transfer	Bank Kotak - Bank SBI Self Transfer	Bank Transfer 	72	Expense 	2,804.44	GPay Self Transfer	20251212-TRA-KTK-0025
+13-12-2025	Income	Get random money	UPI (Google Pay)	200	Income	3,004.44	Get random money	13122025-INC-KTK-0027
