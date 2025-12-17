@@ -1,143 +1,153 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { FiChevronDown, FiChevronRight } from "react-icons/fi";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 function Navbar() {
-  const menuRef = useRef();
+  const { isDark, setIsDark } = useAppContext();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const [managerOpen, setManagerOpen] = useState(false);
-  const [hoverFunds, setHoverFunds] = useState(false);
-  const [hoverSavings, setHoverSavings] = useState(false);
+  const navBg = isDark
+    ? "bg-gray-900 text-gray-100"
+    : "bg-white text-gray-800";
 
-  // Close menus if clicked outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setManagerOpen(false);
-        setHoverFunds(false);
-        setHoverSavings(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const linkBase =
+    "relative px-3 py-2 text-sm font-semibold transition-colors duration-200";
 
-  // Function to open only one submenu at a time
-  const handleHoverFunds = () => {
-    setHoverFunds(true);
-    setHoverSavings(false);
-  };
-
-  const handleHoverSavings = () => {
-    setHoverSavings(true);
-    setHoverFunds(false);
-  };
+  const linkText = isDark
+    ? "text-gray-300 hover:text-white"
+    : "text-gray-600 hover:text-gray-900";
 
   return (
-    <nav className="bg-white shadow-md py-4 px-6 sticky top-0 z-50">
-      <div className="flex justify-around items-center">
-        <div className="text-2xl font-bold text-gray-800">Where is my money ?</div>
+    <nav className={`${navBg} sticky top-0 z-50 shadow-sm`}>
+      <div className="px-6 py-4 flex justify-between items-center">
 
-        <div className="mx-4 flex gap-3">
-          <Link
-            to="sips"
-            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold
-               hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600
-               transition-all duration-200 shadow-sm"
-          >
-            SIP
-          </Link>
-
-          <Link
-            to="/mainAC"
-            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold
-               hover:bg-green-50 hover:border-green-400 hover:text-green-600
-               transition-all duration-200 shadow-sm"
-          >
-            Main A/C
-          </Link>
-
-          <Link
-            to="/allTransactions"
-            className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-sm font-semibold
-               hover:bg-purple-50 hover:border-purple-400 hover:text-purple-600
-               transition-all duration-200 shadow-sm"
-          >
-            All Transactions
-          </Link>
-        </div>
-
-
-        <div className="flex space-x-6 relative" ref={menuRef}>
-          {/* Manager Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setManagerOpen(!managerOpen)}
-              className="flex items-center px-4 py-2 rounded-md font-medium text-gray-700 hover:bg-gray-100"
-            >
-              Manager <FiChevronDown className="ml-1" />
-            </button>
-
-            {managerOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-50">
-                {/* Funds submenu */}
-                <div
-                  className="relative"
-                  onMouseEnter={handleHoverFunds}
-                  onMouseLeave={() => setHoverFunds(false)}
-                >
-                  <button className="w-full flex justify-between items-center px-4 py-2 hover:bg-gray-100">
-                    Funds <FiChevronRight />
-                  </button>
-                  {hoverFunds && (
-                    <div className="absolute top-0 right-full mr-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
-                      <NavLink
-                        to="/add-funds"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                      >
-                        Add
-                      </NavLink>
-                      <NavLink
-                        to="/withdraw-funds"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                      >
-                        Withdraw
-                      </NavLink>
-                    </div>
-                  )}
-                </div>
-
-                {/* Savings submenu */}
-                <div
-                  className="relative"
-                  onMouseEnter={handleHoverSavings}
-                  onMouseLeave={() => setHoverSavings(false)}
-                >
-                  <button className="w-full flex justify-between items-center px-4 py-2 hover:bg-gray-100">
-                    Savings <FiChevronRight />
-                  </button>
-                  {hoverSavings && (
-                    <div className="absolute top-0 right-full mr-1 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
-                      <NavLink
-                        to="/add-savings"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                      >
-                        Add
-                      </NavLink>
-                      <NavLink
-                        to="/withdraw-savings"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                      >
-                        Withdraw
-                      </NavLink>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
+        {/* Logo */}
+        <div className="flex flex-col">
+          <div className="text-2xl font-bold">
+            Where is my money ?
           </div>
+          <div className="mt-2 h-1 w-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
         </div>
+
+        {/* Desktop Menu */}
+        <div className="hidden md:flex items-center gap-6">
+
+          {[
+            { to: "/", label: "Home" },
+            { to: "/invested", label: "Invested" },
+            { to: "/accounts", label: "Accounts" },
+            { to: "/allTransactions", label: "All Transactions" },
+            { to: "/lend", label: "Lend" },
+          ].map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                `${linkBase} ${linkText}`
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <span>{label}</span>
+
+                  {/* Accent bar */}
+                  {isActive && (
+                    <span className="absolute left-0 -bottom-1 h-1 w-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
+                  )}
+                </>
+              )}
+            </NavLink>
+          ))}
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className={`ml-4 px-3 py-2 rounded-lg text-sm font-medium transition
+              ${isDark ? "bg-yellow-400 text-black" : "bg-gray-800 text-white"}
+            `}
+          >
+            {isDark ? "☀ Light" : "🌙 Dark"}
+          </button>
+        </div>
+
+        {/* Mobile Hamburger */}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="md:hidden text-2xl"
+        >
+          ☰
+        </button>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div
+          className={`md:hidden px-6 pb-4 flex flex-col gap-4
+            ${isDark ? "bg-gray-900" : "bg-white"}
+          `}
+        >
+          {[
+            { to: "/", label: "Home" },
+            { to: "/invested", label: "Invested" },
+            { to: "/accounts", label: "Accounts" },
+            { to: "/allTransactions", label: "All Transactions" },
+            { to: "/lend", label: "Lend" },
+          ].map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={() => setIsMenuOpen(false)}
+              className="relative text-sm font-semibold"
+            >
+              {({ isActive }) => (
+                <div className="flex flex-col w-fit">
+                  <span
+                    className={
+                      isDark
+                        ? "text-gray-300"
+                        : "text-gray-700"
+                    }
+                  >
+                    {label}
+                  </span>
+
+                  {isActive && (
+                    <span className="mt-1 h-1 w-full rounded-full bg-gradient-to-r from-indigo-500 to-purple-500" />
+                  )}
+                </div>
+              )}
+            </NavLink>
+          ))}
+
+          {/* Dark Mode Toggle */}
+          <button
+            onClick={() => setIsDark(!isDark)}
+            className={`relative w-24 h-10 flex items-center rounded-full p-1 transition-colors duration-300
+             ${isDark ? "bg-yellow-400" : "bg-gray-800"}
+            `}
+          >
+            {/* Slider */}
+            <div
+              className={`absolute w-8 h-8 rounded-full bg-white shadow-md transform transition-transform duration-300
+              ${isDark ? "translate-x-14" : "translate-x-0"}
+            `}
+            ></div>
+
+            {/* Icons */}
+            <span
+              className={`absolute left-2 text-sm transition-opacity duration-300 ${isDark ? "opacity-100" : "opacity-0"}`}
+            >
+              ☀
+            </span>
+            <span
+              className={`absolute right-2 text-sm transition-opacity duration-300 ${isDark ? "opacity-0" : "opacity-100"}`}
+            >
+              🌙
+            </span>
+          </button>
+
+        </div>
+      )}
     </nav>
   );
 }

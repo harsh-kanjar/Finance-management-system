@@ -26,3 +26,8 @@ Date	Category	Description	Payment method	Amount (INR)	Type	Balance after spend (
 11-12-2025	Personal	Nothing	No Transaction	0	Nothing	2,876.44	No transaction happne	20251112-PER-KTK-0025
 12-12-2025	Transfer	Bank Kotak - Bank SBI Self Transfer	Bank Transfer 	72	Expense 	2,804.44	GPay Self Transfer	20251212-TRA-KTK-0025
 13-12-2025	Income	Get random money	UPI (Google Pay)	200	Income	3,004.44	Get random money	13122025-INC-KTK-0027
+14-12-2025	Expense 	Snacks / Personal Spend	UPI (Google Pay)	217.14	Expense 	2,787.30	Spend on Pizza	13122025-INC-KTK-0027
+15-12-2025	Expense 	Snacks / Personal Spend	UPI (Google Pay)	28	Expense 	2,759.30	Spend on Pizza	14122025-INC-KTK-0027
+15-12-2025	Expense 	Snacks / Personal Spend	UPI (Google Pay)	120	Expense 	2,639.30	Spend on Fast Food	15122025-INC-KTK-0028
+16-12-2025	Income	Pizza refund	UPI (Google Pay)	200	Income	2,639	Pizza refund	16122025-INC-KTK-0027
+16-12-2025	Income	Get random money	ATM/CASH	150	Income	2,789	Get random money	16122025-INC-KTK-0028

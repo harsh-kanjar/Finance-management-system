@@ -310,10 +310,7 @@ const SpendDashboard = () => {
 
 
             </div>
-
-            {/* Chart + Right Placeholder */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left: Chart */}
+            <div className="">
                 <div
                     className={`p-4 rounded-xl shadow flex flex-col bg-white`}
                 >
@@ -356,11 +353,6 @@ const SpendDashboard = () => {
                     </ResponsiveContainer>
 
 
-                </div>
-
-                {/* Right placeholder */}
-                <div>
-                    <BalanceDashboard data={balanceData} />
                 </div>
             </div>
 

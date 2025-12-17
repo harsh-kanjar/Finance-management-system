@@ -7,8 +7,9 @@ export const AppProvider = ({ children }) => {
   const [balanceData, setBalanceData] = useState([]);
   const [savingsData, setSavingsData] = useState([]);
   const [spendData, setSpendData] = useState([]);
-  const [sipData, setSipData] = useState([]); // <-- New state for SIPs
+  const [sipData, setSipData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
 
   useEffect(() => {
     const loadTSVFiles = async () => {
@@ -42,6 +43,8 @@ export const AppProvider = ({ children }) => {
         spendData,
         sipData,
         loading,
+        isDark,
+        setIsDark,
       }}
     >
       {children}

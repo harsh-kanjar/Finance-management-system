@@ -8,10 +8,12 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
+import { useAppContext } from "../context/AppContext";
 
 const COLORS = ["#4B7BEC", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6"];
 
 const SIPDashboard = () => {
+  const { isDark } = useAppContext();
   const [rows, setRows] = useState([]);
 
   useEffect(() => {
@@ -23,6 +25,8 @@ const SIPDashboard = () => {
     loadTSV();
   }, []);
 
+  const toNumber = (v) => Number(String(v || "").replace(/,/g, "")) || 0;
+
   const parseTSV = (text) => {
     const lines = text.trim().split("\n");
     const headers = lines[0].split("\t");
@@ -30,17 +34,15 @@ const SIPDashboard = () => {
     return lines.slice(1).map((line) => {
       const values = line.split("\t");
       const obj = {};
-
       headers.forEach((h, i) => {
         obj[h.trim()] = values[i] ? values[i].trim() : "";
       });
 
       obj.Fund = obj["Fund"] || obj["Fund Name"] || "";
-      obj.Growth = Number(obj["Growth"] || obj["Growth %"] || 0);
-      obj.Amount = Number(obj["Amount"] || 0);
-      obj.Balance = Number(obj["Balance After Investment (INR)"] || 0);
-      obj.Units = Number(obj["Units Purchased"] || 0);
-
+      obj.Growth = toNumber(obj["Growth"]);
+      obj.Amount = toNumber(obj["Amount"]);
+      obj.Balance = toNumber(obj["Balance After Investment (INR)"]);
+      obj.Units = toNumber(obj["Units Purchased"]);
       return obj;
     });
   };
@@ -86,9 +88,7 @@ const SIPDashboard = () => {
   const totalAmountByFund = useMemo(() => {
     const res = {};
     fundNames.forEach((f) => {
-      res[f] = rows
-        .filter((r) => r.Fund === f)
-        .reduce((a, b) => a + b.Amount, 0);
+      res[f] = rows.filter((r) => r.Fund === f).reduce((a, b) => a + b.Amount, 0);
     });
     return res;
   }, [rows, fundNames]);
@@ -96,29 +96,49 @@ const SIPDashboard = () => {
   const totalUnitsByFund = useMemo(() => {
     const res = {};
     fundNames.forEach((f) => {
-      res[f] = rows
-        .filter((r) => r.Fund === f)
-        .reduce((a, b) => a + b.Units, 0);
+      res[f] = rows.filter((r) => r.Fund === f).reduce((a, b) => a + b.Units, 0);
     });
     return res;
   }, [rows, fundNames]);
 
   if (!rows.length) return <p>Loading...</p>;
 
+  const theme = {
+    card: isDark
+      ? "bg-gray-800 text-gray-100 border-gray-700"
+      : "bg-white text-gray-800 border-gray-200",
+    summaryCard: isDark
+      ? "bg-gray-700 text-gray-100 border-gray-600"
+      : "bg-gray-50 text-gray-800 border-gray-200",
+    textMuted: isDark ? "text-gray-300" : "text-gray-500",
+  };
+
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div
+      className={`flex flex-col gap-6 w-full p-2 ${
+        isDark ? "bg-gray-900" : "bg-gray-100"
+      }`}
+    >
       {/* ================== GRAPH 1 : GROWTH ================== */}
-      <div className="flex gap-4 w-full">
-        <div className="w-[80%] bg-white p-4 rounded-xl shadow">
+      <div className="flex flex-col md:flex-row gap-4 w-full">
+        <div className={`md:w-4/5 p-4 rounded-xl shadow border ${theme.card}`}>
           <h2 className="text-xl font-semibold mb-4">
             SIP & Lump Sum Growth Comparison
           </h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={growthData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? "#555" : "#e5e5e5"}
+              />
               <XAxis dataKey="Date" hide />
               <YAxis unit="%" />
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? "#333" : "#fff",
+                  color: isDark ? "#fff" : "#000",
+                }}
+              />
               {fundNames.map((fund, i) => (
                 <Line
                   key={fund}
@@ -132,67 +152,82 @@ const SIPDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className="w-[20%] bg-white p-5 rounded-xl shadow flex flex-col gap-6">
-          <h3 className="text-lg font-semibold border-b pb-2">
-            Growth Summary
-          </h3>
+        <div className="md:w-1/5 flex flex-col gap-6">
+          <div
+            className={`p-5 rounded-xl shadow border ${theme.summaryCard}`}
+          >
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Growth Summary
+            </h3>
 
-          <div className="bg-green-50 text-green-800 p-3 rounded-xl text-center border border-green-200 shadow-sm font-bold">
-            Overall Avg Growth:{" "}
-            {(
-              Object.values(avgGrowthByFund).reduce((a, b) => a + b, 0) /
-              fundNames.length
-            ).toFixed(2)}
-            %
-          </div>
+            <div className="bg-green-50 text-green-800 p-3 rounded-xl text-center border border-green-200 shadow-sm font-bold mt-3">
+              Overall Avg Growth:{" "}
+              {(
+                Object.values(avgGrowthByFund).reduce((a, b) => a + b, 0) /
+                fundNames.length
+              ).toFixed(2)}
+              %
+            </div>
 
-          <h4 className="text-sm font-semibold opacity-80 border-b pb-1">
-            Fund-wise Avg Growth
-          </h4>
+            <h4 className="text-sm font-semibold opacity-80 border-b pb-1 mt-4">
+              Fund-wise Avg Growth
+            </h4>
 
-          <div className="flex flex-col gap-2">
-            {fundNames.map((f) => (
-              <div
-                key={f}
-                className="flex justify-between p-2 bg-gray-50 rounded-lg border"
-              >
-                <span className="text-sm">{f}</span>
-                <span className="font-semibold">
-                  {avgGrowthByFund[f].toFixed(2)}%
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <h4 className="text-sm font-semibold opacity-80 border-b pb-1">
-            Color Legend
-          </h4>
-          <div className="flex flex-col gap-2">
-            {fundNames.map((f, i) => (
-              <div key={f} className="flex items-center gap-2">
+            <div className="flex flex-col gap-2 mt-2">
+              {fundNames.map((f) => (
                 <div
-                  className="w-4 h-4 rounded"
-                  style={{ backgroundColor: COLORS[i % COLORS.length] }}
-                />
-                <span className="text-sm">{f}</span>
-              </div>
-            ))}
+                  key={f}
+                  className={`flex justify-between p-2 rounded-lg border ${theme.summaryCard}`}
+                >
+                  <span className="text-sm">{f}</span>
+                  <span className="font-semibold">
+                    {avgGrowthByFund[f].toFixed(2)}%
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            <h4 className="text-sm font-semibold opacity-80 border-b pb-1 mt-4">
+              Color Legend
+            </h4>
+
+            <div className="flex flex-col gap-2 mt-2">
+              {fundNames.map((f, i) => (
+                <div key={f} className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded"
+                    style={{
+                      backgroundColor: COLORS[i % COLORS.length],
+                    }}
+                  />
+                  <span className="text-sm">{f}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       {/* ================== GRAPH 2 : BALANCE ================== */}
-      <div className="flex gap-4 w-full">
-        <div className="w-[80%] bg-white p-4 rounded-xl shadow">
+      <div className="flex flex-col md:flex-row gap-4 w-full">
+        <div className={`md:w-4/5 p-4 rounded-xl shadow border ${theme.card}`}>
           <h2 className="text-xl font-semibold mb-4">
             Balance After Investment (INR)
           </h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={balanceData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? "#555" : "#e5e5e5"}
+              />
               <XAxis dataKey="Date" hide />
-              <YAxis unit="₹" />
-              <Tooltip />
+              <YAxis />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? "#333" : "#fff",
+                  color: isDark ? "#fff" : "#000",
+                }}
+              />
               {fundNames.map((fund, i) => (
                 <Line
                   key={fund}
@@ -206,15 +241,18 @@ const SIPDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className="w-[20%] bg-white p-5 rounded-xl shadow">
+        <div
+          className={`md:w-1/5 p-5 rounded-xl shadow border ${theme.summaryCard}`}
+        >
           <h3 className="text-lg font-semibold border-b pb-2">
             Total Invested
           </h3>
+
           <div className="flex flex-col gap-3 mt-3">
             {fundNames.map((f) => (
               <div
                 key={f}
-                className="flex justify-between p-2 bg-blue-50 border border-blue-200 rounded-lg"
+                className={`flex justify-between p-2 rounded-lg border ${theme.summaryCard}`}
               >
                 <span className="text-sm">{f}</span>
                 <span className="font-semibold">
@@ -227,15 +265,23 @@ const SIPDashboard = () => {
       </div>
 
       {/* ================== GRAPH 3 : UNITS ================== */}
-      <div className="flex gap-4 w-full">
-        <div className="w-[80%] bg-white p-4 rounded-xl shadow">
+      <div className="flex flex-col md:flex-row gap-4 w-full">
+        <div className={`md:w-4/5 p-4 rounded-xl shadow border ${theme.card}`}>
           <h2 className="text-xl font-semibold mb-4">Units Purchased</h2>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={unitsData}>
-              <CartesianGrid strokeDasharray="3 3" />
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? "#555" : "#e5e5e5"}
+              />
               <XAxis dataKey="Date" hide />
               <YAxis />
-              <Tooltip />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? "#333" : "#fff",
+                  color: isDark ? "#fff" : "#000",
+                }}
+              />
               {fundNames.map((fund, i) => (
                 <Line
                   key={fund}
@@ -249,15 +295,18 @@ const SIPDashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        <div className="w-[20%] bg-white p-5 rounded-xl shadow">
+        <div
+          className={`md:w-1/5 p-5 rounded-xl shadow border ${theme.summaryCard}`}
+        >
           <h3 className="text-lg font-semibold border-b pb-2">
             Total Units
           </h3>
+
           <div className="flex flex-col gap-3 mt-3">
             {fundNames.map((f) => (
               <div
                 key={f}
-                className="flex justify-between p-2 bg-purple-50 border border-purple-200 rounded-lg"
+                className={`flex justify-between p-2 rounded-lg border ${theme.summaryCard}`}
               >
                 <span className="text-sm">{f}</span>
                 <span className="font-semibold">

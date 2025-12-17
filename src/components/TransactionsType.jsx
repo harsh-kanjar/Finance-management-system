@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 function TransactionsType() {
-  const { balanceData } = useAppContext();
+  const { balanceData, isDark } = useAppContext();
 
   const { chartData, methods, averages } = useMemo(() => {
     if (!balanceData || balanceData.length === 0)
@@ -22,24 +22,19 @@ function TransactionsType() {
 
     const chartData = dates.map((date) => {
       const row = { date };
-
       methods.forEach((method) => {
         const count = balanceData.filter(
           (d) => d.Date === date && d["Payment method"] === method
         ).length;
-
         row[method] = count;
       });
-
       return row;
     });
 
     const averages = {};
     methods.forEach((method) => {
-      const total = balanceData.filter(
-        (d) => d["Payment method"] === method
-      ).length;
-
+      const total = balanceData.filter((d) => d["Payment method"] === method)
+        .length;
       averages[method] = total / dates.length;
     });
 
@@ -59,22 +54,31 @@ function TransactionsType() {
 
   return (
     <div
-      className="w-full p-5 rounded-xl"
-      style={{
-        background: "white",
-        display: "flex",
-        gap: "20px",
-      }}
+      className={`flex flex-col md:flex-row gap-4 p-5 rounded-xl shadow transition-colors ${
+        isDark ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
+      }`}
     >
       {/* LEFT: Chart Section */}
-      <div className="flex-1 h-[380px]">
+      <div className="flex-1 h-80 md:h-[380px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" hide />
-            <YAxis hide/>
-            <Tooltip />
-
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={isDark ? "#444" : "#ccc"}
+            />
+            <XAxis
+              dataKey="date"
+              hide
+              stroke={isDark ? "#eee" : "#333"}
+            />
+            <YAxis hide stroke={isDark ? "#eee" : "#333"} />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: isDark ? "#333" : "#fff",
+                borderColor: isDark ? "#555" : "#ccc",
+                color: isDark ? "#fff" : "#000",
+              }}
+            />
             {methods.map((method, i) => (
               <Line
                 key={method}
@@ -91,11 +95,11 @@ function TransactionsType() {
 
       {/* RIGHT: Stats Section */}
       <div
-        className="w-[280px] p-4 rounded-lg"
-        style={{
-          background: "#f8f9fa",
-          border: "1px solid #e2e2e2",
-        }}
+        className={`w-full md:w-72 p-4 rounded-lg flex-shrink-0 transition-colors ${
+          isDark
+            ? "bg-gray-700 border border-gray-600"
+            : "bg-gray-100 border border-gray-300"
+        }`}
       >
         <h3 className="font-semibold text-lg mb-3">Insights (Main A/C)</h3>
 
@@ -107,7 +111,11 @@ function TransactionsType() {
             {methods.map((method, i) => (
               <div
                 key={method}
-                className="flex items-center justify-between bg-white p-2 rounded-md shadow-sm"
+                className={`flex items-center justify-between p-2 rounded-md shadow-sm transition-colors ${
+                  isDark
+                    ? "bg-gray-800 text-gray-100"
+                    : "bg-white text-gray-900"
+                }`}
               >
                 <div className="flex items-center gap-2">
                   <span
@@ -127,26 +135,6 @@ function TransactionsType() {
             ))}
           </div>
         </div>
-
-        {/* Legend */}
-        {/* <div className="mt-4">
-          <h4 className="font-medium mb-2">Color Legend</h4>
-
-          {methods.map((method, i) => (
-            <div key={method} className="flex items-center gap-2 mb-2">
-              <span
-                style={{
-                  width: "20px",
-                  height: "4px",
-                  backgroundColor: colors[i % colors.length],
-                  display: "inline-block",
-                  borderRadius: "2px",
-                }}
-              ></span>
-              <span className="text-sm">{method}</span>
-            </div>
-          ))}
-        </div> */}
       </div>
     </div>
   );

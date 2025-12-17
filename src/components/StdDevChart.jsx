@@ -7,11 +7,13 @@ import {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
-  ResponsiveContainer,
   ReferenceArea,
+  ResponsiveContainer,
 } from "recharts";
+import { useAppContext } from "../context/AppContext";
 
 function StdDevChart({ balanceData }) {
+  const { isDark } = useAppContext();
   const [includeSelfTransfers, setIncludeSelfTransfers] = useState(false);
   const [includeLend, setIncludeLend] = useState(false);
   const [includeHomeEssentials, setIncludeHomeEssentials] = useState(false);
@@ -22,20 +24,17 @@ function StdDevChart({ balanceData }) {
 
     const normalize = (str) => str?.trim().toLowerCase();
 
-    // Filtering Logic
     const filtered = balanceData
-      .filter((d) => normalize(d.Type) !== "income") // Always ignore income
+      .filter((d) => normalize(d.Type) !== "income")
       .filter(
-        (d) =>
-          includeHomeEssentials ||
-          normalize(d.Type) !== "home essentials"
-      ) // Toggle Home Essentials
-      .filter((d) => includeLend || normalize(d.Type) !== "lend") // Toggle Lend
+        (d) => includeHomeEssentials || normalize(d.Type) !== "home essentials"
+      )
+      .filter((d) => includeLend || normalize(d.Type) !== "lend")
       .filter(
         (d) =>
           includeSelfTransfers ||
           d.Description !== "Bank Kotak - Bank SBI Self Transfer"
-      ) // Toggle Self Transfers
+      )
       .map((d) => {
         const amount = +d["Amount (INR)"].replace(/,/g, "");
         const [day, month, year] = d.Date.split("-");
@@ -52,11 +51,9 @@ function StdDevChart({ balanceData }) {
 
     const amounts = filtered.map((d) => d.Amount);
     const mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
-
     const variance =
       amounts.reduce((sum, a) => sum + Math.pow(a - mean, 2), 0) /
       amounts.length;
-
     const stdDev = Math.sqrt(variance);
 
     const chartData = filtered.map((d) => ({
@@ -68,45 +65,55 @@ function StdDevChart({ balanceData }) {
     return { chartData, mean, stdDev };
   }, [balanceData, includeSelfTransfers, includeLend, includeHomeEssentials]);
 
-  if (!chartData.length) return <p>No data to display.</p>;
+  if (!chartData.length)
+    return (
+      <p className={isDark ? "text-gray-300" : "text-gray-600"}>
+        No data to display.
+      </p>
+    );
 
   return (
-    <div className="bg-white p-4 rounded-xl shadow">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-4 space-y-2 md:space-y-0">
+    <div
+      className={`p-4 rounded-xl shadow w-full ${
+        isDark ? "bg-gray-800 text-gray-100" : "bg-white text-gray-900"
+      }`}
+    >
+      {/* Header & Toggles */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
         <h2 className="text-xl font-semibold">Transaction Range</h2>
-
-        <div className="flex space-x-4">
-          {/* Self Transfers Toggle */}
-          <label className="flex items-center space-x-2">
-            <span className="text-sm">Include Self Transfers</span>
+        <div className="flex flex-wrap gap-4">
+          <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={includeSelfTransfers}
-              onChange={() => setIncludeSelfTransfers((prev) => !prev)}
+              onChange={() =>
+                setIncludeSelfTransfers((prev) => !prev)
+              }
               className="h-5 w-5 accent-blue-500"
             />
+            <span className="text-sm">Include Self Transfers</span>
           </label>
 
-          {/* Lend Toggle */}
-          <label className="flex items-center space-x-2">
-            <span className="text-sm">Include Lend</span>
+          <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={includeLend}
               onChange={() => setIncludeLend((prev) => !prev)}
               className="h-5 w-5 accent-green-500"
             />
+            <span className="text-sm">Include Lend</span>
           </label>
 
-          {/* NEW: Home Essentials Toggle */}
-          <label className="flex items-center space-x-2">
-            <span className="text-sm">Include Home Essentials</span>
+          <label className="flex items-center gap-2">
             <input
               type="checkbox"
               checked={includeHomeEssentials}
-              onChange={() => setIncludeHomeEssentials((prev) => !prev)}
+              onChange={() =>
+                setIncludeHomeEssentials((prev) => !prev)
+              }
               className="h-5 w-5 accent-purple-500"
             />
+            <span className="text-sm">Include Home Essentials</span>
           </label>
         </div>
       </div>
@@ -114,12 +121,27 @@ function StdDevChart({ balanceData }) {
       {/* Chart */}
       <ResponsiveContainer width="100%" height={400}>
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isDark ? "#374151" : "#e5e7eb"}
+          />
 
-          <XAxis dataKey="Date" type="category" name="Date" tickFormatter={(v) => v.slice(0, 2)} hide/>
-          <YAxis dataKey="Amount" type="number" name="Amount" />
+          <XAxis
+            dataKey="Date"
+            type="category"
+            name="Date"
+            tickFormatter={(v) => v.slice(0, 2)}
+            hide
+          />
+          <YAxis
+            dataKey="Amount"
+            type="number"
+            name="Amount"
+            tick={{ fill: isDark ? "#D1D5DB" : "#374151" }}
+          />
 
           <Tooltip
+            cursor={{ stroke: isDark ? "#6B7280" : "#D1D5DB" }}
             formatter={(value) =>
               value.toLocaleString("en-IN", {
                 style: "currency",
@@ -140,7 +162,11 @@ function StdDevChart({ balanceData }) {
             y={mean}
             stroke="#10B981"
             strokeDasharray="3 3"
-            label={{ value: "Mean", position: "right", fill: "#065F46" }}
+            label={{
+              value: "Mean",
+              position: "right",
+              fill: isDark ? "#6EE7B7" : "#065F46",
+            }}
           />
 
           <Scatter data={chartData} fill="#3B82F6">
@@ -157,7 +183,7 @@ function StdDevChart({ balanceData }) {
         </ScatterChart>
       </ResponsiveContainer>
 
-      <p className="text-sm mt-2 text-gray-600">
+      <p className={`mt-2 text-sm ${isDark ? "text-gray-300" : "text-gray-600"}`}>
         Zone: ±1 Standard Deviation (light green). Outliers shown in red.
       </p>
     </div>

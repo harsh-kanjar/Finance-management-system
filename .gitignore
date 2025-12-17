@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+
+kotak.tsv
+savings.tsv
+sips.tsv
+spend.tsv
