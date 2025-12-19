@@ -1,0 +1,11 @@
+{
+    "savings": 50000,
+    "invested": 50000,
+    "primaryAccount": 5000,
+    "spendBalance": 2500,
+    "monthlySaving": 15000,
+    "expense": 2000,
+    "healthCare": 1000,
+    "homeEssentials": 5000,
+    "lendingLimit": 3000
+}

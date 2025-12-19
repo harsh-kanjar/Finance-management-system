@@ -38,6 +38,8 @@ function Navbar() {
             { to: "/accounts", label: "Accounts" },
             { to: "/allTransactions", label: "All Transactions" },
             { to: "/lend", label: "Lend" },
+            { to: "/addRecord", label: "Add Record" },
+            {to:"/addSipRecord", label:"Add SIP Record"}
           ].map(({ to, label }) => (
             <NavLink
               key={to}
@@ -92,6 +94,7 @@ function Navbar() {
             { to: "/accounts", label: "Accounts" },
             { to: "/allTransactions", label: "All Transactions" },
             { to: "/lend", label: "Lend" },
+            { to: "/addRecord", label: "Add Record" },
           ].map(({ to, label }) => (
             <NavLink
               key={to}
