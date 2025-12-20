@@ -112,195 +112,185 @@ const AddSipRecord = () => {
 
   return (
     <div className={`${isDark ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"}`}>
-        <div
-      className={`max-w-xl mx-auto p-6 pt-10 rounded-md shadow-md transition-colors duration-200 ${
-        isDark ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
-      }`}
-    >
-      <h2 className="text-2xl font-bold mb-6">Add SIP Record</h2>
+      <div
+        className={`max-w-xl mx-auto p-6 pt-10 rounded-md shadow-md transition-colors duration-200 ${isDark ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"
+          }`}
+      >
+        <h2 className="text-2xl font-bold mb-6">Add SIP Record</h2>
 
-      {!essentials ? (
-        <p>Loading essentials...</p>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Fund Name */}
-          <div>
-            <label className="block font-medium mb-1">Fund Name</label>
-            <select
-              name="Fund Name"
-              value={formData["Fund Name"]}
-              onChange={handleFundSelect}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
+        {!essentials ? (
+          <p>Loading essentials...</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Fund Name */}
+            <div>
+              <label className="block font-medium mb-1">Fund Name</label>
+              <select
+                name="Fund Name"
+                value={formData["Fund Name"]}
+                onChange={handleFundSelect}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              >
+                <option value="">Select Fund</option>
+                {Object.keys(essentials.Sip).map((fund) => (
+                  <option key={fund} value={fund}>
+                    {fund}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* NAV */}
+            <div>
+              <label className="block font-medium mb-1">NAV (INR)</label>
+              <input
+                type="number"
+                step="0.01"
+                name="NAV (INR)"
+                value={formData["NAV (INR)"]}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              />
+            </div>
+
+            {/* Cap Name */}
+            <div>
+              <label className="block font-medium mb-1">Cap Name</label>
+              <input
+                type="text"
+                name="Cap Name"
+                value={formData["Cap Name"]}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              />
+            </div>
+
+            {/* Investment Type */}
+            <div>
+              <label className="block font-medium mb-1">Investment Type</label>
+              <select
+                name="Investment Type"
+                value={formData["Investment Type"]}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              >
+                <option value="">Select Type</option>
+                {Object.values(essentials["Investment Types"]).map((type, idx) => (
+                  <option key={idx} value={type}>
+                    {type}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Amount */}
+            <div>
+              <label className="block font-medium mb-1">Amount (INR)</label>
+              <input
+                type="number"
+                name="Amount"
+                value={formData.Amount}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              />
+            </div>
+
+            {/* Units Purchased */}
+            <div>
+              <label className="block font-medium mb-1">Units Purchased</label>
+              <input
+                type="number"
+                name="Units Purchased"
+                value={formData["Units Purchased"]}
+                readOnly
+                className={`w-full border rounded px-3 py-2 bg-gray-200 ${isDark ? "bg-gray-700 text-gray-200 border-gray-600" : "bg-gray-100"
+                  }`}
+              />
+            </div>
+
+            {/* Payment Method */}
+            <div>
+              <label className="block font-medium mb-1">Payment Method</label>
+              <select
+                name="Payment Method"
+                value={formData["Payment Method"]}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              >
+                <option value="">Select Payment Method</option>
+                {Object.values(essentials["Payment Methods"]).map((pm, idx) => (
+                  <option key={idx} value={pm}>
+                    {pm}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Date */}
+            <div>
+              <label className="block font-medium mb-1">Date</label>
+              <input
+                type="date"
+                name="Date"
+                value={formData.Date}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+                required
+              />
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="block font-medium mb-1">Notes</label>
+              <input
+                type="text"
+                name="Notes"
+                value={formData.Notes}
+                onChange={handleChange}
+                className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${isDark
+                    ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
+                    : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
+                  }`}
+              />
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="w-full bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-600 transition"
             >
-              <option value="">Select Fund</option>
-              {Object.keys(essentials.Sip).map((fund) => (
-                <option key={fund} value={fund}>
-                  {fund}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Cap Name */}
-          <div>
-            <label className="block font-medium mb-1">Cap Name</label>
-            <input
-              type="text"
-              name="Cap Name"
-              value={formData["Cap Name"]}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
-            />
-          </div>
-
-          {/* Investment Type */}
-          <div>
-            <label className="block font-medium mb-1">Investment Type</label>
-            <select
-              name="Investment Type"
-              value={formData["Investment Type"]}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
-            >
-              <option value="">Select Type</option>
-              {Object.values(essentials["Investment Types"]).map((type, idx) => (
-                <option key={idx} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Amount */}
-          <div>
-            <label className="block font-medium mb-1">Amount (INR)</label>
-            <input
-              type="number"
-              name="Amount"
-              value={formData.Amount}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
-            />
-          </div>
-
-          {/* NAV */}
-          <div>
-            <label className="block font-medium mb-1">NAV (INR)</label>
-            <input
-              type="number"
-              step="0.01"
-              name="NAV (INR)"
-              value={formData["NAV (INR)"]}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
-            />
-          </div>
-
-          {/* Units Purchased */}
-          <div>
-            <label className="block font-medium mb-1">Units Purchased</label>
-            <input
-              type="number"
-              name="Units Purchased"
-              value={formData["Units Purchased"]}
-              readOnly
-              className={`w-full border rounded px-3 py-2 bg-gray-200 ${
-                isDark ? "bg-gray-700 text-gray-200 border-gray-600" : "bg-gray-100"
-              }`}
-            />
-          </div>
-
-          {/* Payment Method */}
-          <div>
-            <label className="block font-medium mb-1">Payment Method</label>
-            <select
-              name="Payment Method"
-              value={formData["Payment Method"]}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
-            >
-              <option value="">Select Payment Method</option>
-              {Object.values(essentials["Payment Methods"]).map((pm, idx) => (
-                <option key={idx} value={pm}>
-                  {pm}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Date */}
-          <div>
-            <label className="block font-medium mb-1">Date</label>
-            <input
-              type="date"
-              name="Date"
-              value={formData.Date}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-              required
-            />
-          </div>
-
-          {/* Notes */}
-          <div>
-            <label className="block font-medium mb-1">Notes</label>
-            <input
-              type="text"
-              name="Notes"
-              value={formData.Notes}
-              onChange={handleChange}
-              className={`w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 ${
-                isDark
-                  ? "bg-gray-800 border-gray-600 text-gray-100 focus:ring-blue-400"
-                  : "bg-white border-gray-300 text-gray-900 focus:ring-blue-400"
-              }`}
-            />
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2 rounded hover:bg-blue-600 transition"
-          >
-            Add SIP Record
-          </button>
-        </form>
-      )}
-    </div>
+              Add SIP Record
+            </button>
+          </form>
+        )}
+      </div>
     </div>
   );
 };

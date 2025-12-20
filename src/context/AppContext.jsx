@@ -15,21 +15,21 @@ export const AppProvider = ({ children }) => {
 
 
 
-    useEffect(() => {
-        const fetchEssentials = async () => {
-            try {
-                const res = await axios.get("http://localhost:3000/essentials", {
-                    headers: {
-                        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6eyJ1c2VybmFtZSI6ImhhcnNoa2FuamFyMDdAZ21haWwuY29tIn0sImlhdCI6MTc2NTk5NzYzNH0.WKG3hVnBNIxLZr_d042vfxxtXdXuql0EbfYzpUwt_8A`,
-                    },
-                });
-                setEssentials(res.data);
-            } catch (err) {
-                console.error("Failed to fetch essentials:", err);
-            }
-        };
-        fetchEssentials();
-    }, []);
+  useEffect(() => {
+    const fetchEssentials = async () => {
+      try {
+        const res = await axios.get("http://localhost:3000/essentials", {
+          headers: {
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6eyJ1c2VybmFtZSI6ImhhcnNoa2FuamFyMDdAZ21haWwuY29tIn0sImlhdCI6MTc2NTk5NzYzNH0.WKG3hVnBNIxLZr_d042vfxxtXdXuql0EbfYzpUwt_8A`,
+          },
+        });
+        setEssentials(res.data);
+      } catch (err) {
+        console.error("Failed to fetch essentials:", err);
+      }
+    };
+    fetchEssentials();
+  }, []);
   console.log("AppContext rendered");
   console.log(essentials)
   /* ===============================
@@ -38,10 +38,15 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     const loadTSVFiles = async () => {
       try {
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6eyJ1c2VybmFtZSI6ImhhcnNoa2FuamFyMDdAZ21haWwuY29tIn0sImlhdCI6MTc2NTk5NzYzNH0.WKG3hVnBNIxLZr_d042vfxxtXdXuql0EbfYzpUwt_8A"; // your token
+
         const [b, s, sp, sip] = await Promise.all([
-          d3.tsv("/kotak.tsv"),
-          d3.tsv("/savings.tsv"),
-          d3.tsv("/spend.tsv"),
+          fetch("http://localhost:3000/set1", { headers: { Authorization: `Bearer ${token}` } })
+            .then(res => res.json()),  // parsed TSV JSON
+          fetch("http://localhost:3000/set3", { headers: { Authorization: `Bearer ${token}` } })
+            .then(res => res.json()),  // ✅ parse JSON here as well
+          fetch("http://localhost:3000/set2", { headers: { Authorization: `Bearer ${token}` } })
+            .then(res => res.json()),  // ✅ parse JSON here as well
           d3.tsv("/sips.tsv"),
         ]);
 
@@ -58,6 +63,11 @@ export const AppProvider = ({ children }) => {
 
     loadTSVFiles();
   }, []);
+
+
+
+  console.log("Balance Data:", balanceData);
+
 
   /* ===============================
      Derived values (MEMOIZED)
